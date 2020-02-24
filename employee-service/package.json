@@ -1,0 +1,14 @@
+{
+  "name": "microservices-crm",
+  "version": "1.0.0",
+  "description": "serverless",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mostafa Albana",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.9.1"
+  }
+}
