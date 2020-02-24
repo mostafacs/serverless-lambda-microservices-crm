@@ -3,11 +3,6 @@
 const Employee = require('./models/employee');
 const db = require('./db/db');
 
-// access_key_id = AKIAWVWSV6PKJ2JKE6SS
-// access_key_secret = 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
-//  https://6mbkfxyu2e.execute-api.us-east-1.amazonaws.com/dev/employee
-
-// sls invoke local -f saveEmployee --data '{"email": 'engmostafa.cs@gmail.com"}'
 module.exports.saveEmployee = async employeeParams => {
     //context.callbackWaitsForEmptyEventLoop = false;
     let response = {
