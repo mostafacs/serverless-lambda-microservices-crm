@@ -22,4 +22,4 @@ async function connection()  {
     await connection();
 })();
 
-module.exports.connection = connection();
+module.exports.connection = connection;
