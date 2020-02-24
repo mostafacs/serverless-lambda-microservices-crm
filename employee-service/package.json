@@ -1,5 +1,5 @@
 {
-  "name": "microservices-crm",
+  "name": "employee-service",
   "version": "1.0.0",
   "description": "serverless",
   "main": "index.js",
