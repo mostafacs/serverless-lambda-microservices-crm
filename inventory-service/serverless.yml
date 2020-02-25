@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: client-service
+service: inventory-service
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -23,6 +23,23 @@ service: client-service
 provider:
   name: aws
   runtime: nodejs12.x
+  iamRoleStatements:
+        - Effect: "Allow"
+          Action:
+            - cloudformation: CreateStack
+            - cloudformation: DescribeStacks
+            - cloudformation: CreateChangeSet
+            - cloudformation: ListStacks
+            - cloudformation: UpdateStack
+            - cloudformation: DescribeChangeSet
+            - cloudformation: ExecuteChangeSet
+            - iam: GetRole
+            - lambda: UpdateFunctionCode
+            - lambda: UpdateFunctionConfig
+            - lambda: GetFunctionConfiguration
+            - lambda: AddPermission
+            - s3: GetObject
+          Resource: "*"
 
 # you can overwrite defaults here
 #  stage: dev
@@ -57,9 +74,13 @@ provider:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
-#functions:
-#  hello:
-#    handler: handler.hello
+functions:
+  getInventory:
+    handler: handler.getInventory
+    events:
+      - http:
+          path: inventory
+          method: get
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

@@ -1,7 +1,7 @@
 'use strict';
 
-const Employee = require('./models/employee');
-const db = require('./db/db');
+const Employee = require('../models/employee');
+// const db = require('./db/db');
 
 module.exports.saveEmployee = async employeeParams => {
     //context.callbackWaitsForEmptyEventLoop = false;
@@ -34,6 +34,7 @@ module.exports.getEmployee = async data => {
 
     const email = data.pathParameters.email;
     const employee = await Employee.findOne({email: email});
+    console.log(employee);
     response.body = JSON.stringify({ message: 'Employee loaded successfully', data: employee});
     return response;
 }

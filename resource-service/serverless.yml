@@ -77,14 +77,14 @@ provider:
 
 functions:
   getEmployee:
-    handler: handler.getEmployee
+    handler: handlers/employee-handler.getEmployee
     events:
       - http:
           path: employee/{email}
           method: get
           cors: true
   saveEmployee:
-    handler: handler.saveEmployee
+    handler: handlers/employee-handler.saveEmployee
     events:
       - http:
           path: employee

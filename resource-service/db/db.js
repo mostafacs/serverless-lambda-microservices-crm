@@ -8,7 +8,7 @@ const options = {
     useUnifiedTopology: true
 };
 
-const mongoUrl = 'mongodb+srv://mostafa:admin@cluster0-opsew.mongodb.net/employees?retryWrites=true&w=majority';
+const mongoUrl = 'mongodb+srv://mostafa:admin@cluster0-opsew.mongodb.net/resources?retryWrites=true&w=majority';
 
 
 async function connection()  {
@@ -19,6 +19,7 @@ async function connection()  {
 
 
 (async () => {
+    console.log('callll');
     await connection();
 })();
 
