@@ -1,7 +1,7 @@
 'use strict';
 
 const Employee = require('../models/employee');
-// const db = require('./db/db');
+
 
 module.exports.saveEmployee = async employeeParams => {
     //context.callbackWaitsForEmptyEventLoop = false;
@@ -39,15 +39,19 @@ module.exports.getEmployee = async data => {
     return response;
 }
 
+/*(async () => {
+    const db = require('../db/db');
+    let data = {
+        first_name: 'mostafa',
+        last_name: 'albana',
+        salary: 2523.5,
+        email: 'engmostafa.cs@gmail.com',
+        job_type: 0,
+        employee_id: 1
+    };
+    db.connection();
+    console.log(await Employee.countDocuments());
+    // let user = new Employee(data);
+    // console.log(await user.save());
+})();*/
 
-// let data = {first_name: 'mostafa', last_name: 'albana', salary: 2523.5, email: 'engmostafa.cs@gmail.com'};
-// const promise = mongoose.connect(mongoUrl, options);
-// promise.then(() => {
-//     let user = new User(data);
-//     return user.save();
-// }).then((result) => {
-//     response.body = JSON.stringify({ message: 'saved', data: result});
-//     callback(null, response);
-// }).catch(error => {
-//     callback(error);
-// });

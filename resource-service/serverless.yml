@@ -76,6 +76,7 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
+  # --------- Employee Functions ------------------------
   getEmployee:
     handler: handlers/employee-handler.getEmployee
     events:
@@ -90,6 +91,42 @@ functions:
           path: employee
           method: post
           cors: true
+
+# --------- Client Functions ------------------------
+
+  getClient:
+    handler: handlers/client-handler.getClient
+    events:
+      - http:
+          path: client/{email}
+          method: get
+          cors: true
+  saveClient:
+    handler: handlers/client-handler.saveClient
+    events:
+      - http:
+          path: client
+          method: post
+          cors: true
+
+  # --------- Vehicle Functions ------------------------
+
+  getVehicle:
+    handler: handlers/vehicle-handler.getVehicle
+    events:
+      - http:
+          path: vehicle/{email}
+          method: get
+          cors: true
+  saveVehicle:
+    handler: handlers/vehicle-handler.saveVehicle
+    events:
+      - http:
+          path: vehicle
+          method: post
+          cors: true
+
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
