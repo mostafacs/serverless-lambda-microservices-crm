@@ -1,10 +1,10 @@
 'use strict';
 
 const Employee = require('../models/employee');
+require('../db/db'); // required
 
 
 module.exports.saveEmployee = async employeeParams => {
-    //context.callbackWaitsForEmptyEventLoop = false;
     let response = {
         isBase64Encoded: false,
         statusCode: 200,
@@ -18,6 +18,7 @@ module.exports.saveEmployee = async employeeParams => {
         return response;
     } catch (e) {
         response.statusCode = 500;
+        response.body = JSON.stringify({message: e.message});
         console.log(e);
         return response;
     }
@@ -25,18 +26,23 @@ module.exports.saveEmployee = async employeeParams => {
 };
 
 
-module.exports.getEmployee = async data => {
-    //context.callbackWaitsForEmptyEventLoop = false;//defaults to true and will result in timeout
+module.exports.getEmployee = async (data, context) => {
     let response = {
         statusCode: 200,
         body: null
     };
 
-    const email = data.pathParameters.email;
-    const employee = await Employee.findOne({email: email});
-    console.log(employee);
-    response.body = JSON.stringify({ message: 'Employee loaded successfully', data: employee});
-    return response;
+    try {
+        const email = data.pathParameters.email;
+        const employee = await Employee.findOne({email: email});
+        response.body = JSON.stringify({message: 'Employee loaded successfully', data: employee});
+        console.log(response);
+        return response;
+    } catch (e) {
+        response.statusCode = 500;
+        context.captureError(e);
+        return response;
+    }
 }
 
 /*(async () => {

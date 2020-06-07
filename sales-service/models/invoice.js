@@ -7,7 +7,6 @@ module.exports = mongoose.model('Invoice', {
     total_quantity: {type: Number, index: true, required: true},
     job_type: {type: Number, index: true, enum: [JobType.DRIVER, JobType.SALES], required: true},
     client: {
-        card_id: {type: Number, index: true},
         first_name: { type: String},
         last_name: {type: String},
         email: {type: String, index: true}

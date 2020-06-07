@@ -8,7 +8,7 @@ const options = {
     useUnifiedTopology: true
 };
 
-const mongoUrl = process.env.resource_db_url;
+const mongoUrl = process.env.inventory_db_url;
 console.log(mongoUrl);
 
 async function connection()  {

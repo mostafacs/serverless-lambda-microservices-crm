@@ -1,0 +1,72 @@
+curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+'{
+    "warehouseCode": "wh-123",
+    "warehouseLabel": "NC-wh",
+    "totalQty": 1,
+    "priority": 1,
+    "locations": [{
+        "locationLabel": "loc 1",
+        "locationCode": "loc-1",
+        "locationDesc": "dec",
+        "totalQty": 0,
+        "priority": 1
+    }]
+}' \
+ 'http://localhost:3000/dev/warehouse'
+
+--------------
+
+
+ curl -i -X PUT \
+    -H "Content-Type:application/json" \
+    -d \
+ '{
+      "warehouseCode": "wh-123",
+      "warehouseLabel": "NC-whxx",
+      "totalQty": 1,
+      "priority": 1,
+      "locations": [{
+          "locationLabel": "loc 1 xxx",
+          "locationCode": "loc-1",
+          "locationDesc": "dec x",
+          "totalQty": 0,
+          "priority": 1
+      },
+       {
+          "locationLabel": "loc 2",
+          "locationCode": "loc-2",
+          "locationDesc": "dec 2",
+          "totalQty": 0,
+          "priority": 2
+      }]
+  }' \
+  'http://localhost:3000/dev/warehouse'
+
+
+  -------------------------------------------------------------------------------------------------------
+
+curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+'{
+  "warehouseCode": "wh-123",
+  "locationCode": "loc-1",
+  "productSku": "sku23",
+  "quantity": 5
+}' \
+ 'http://localhost:3000/dev/stock/add'
+
+curl -i -X PUT \
+   -H "Content-Type:application/json" \
+   -d \
+'{
+  "fromWarehouseCode": "wh-123",
+  "fromLocationCode": "loc-1",
+  "toWarehouseCode": "wh-123",
+  "toLocationCode": "loc-2",
+  "productSku": "sku23",
+  "quantity": 10
+}' \
+ 'http://localhost:3000/dev/stock/move'
