@@ -70,3 +70,15 @@ curl -i -X PUT \
   "quantity": 10
 }' \
  'http://localhost:3000/dev/stock/move'
+
+ ------------------------------------------
+
+
+ curl -i -X POST \
+    -H "Content-Type:application/json" \
+    -d \
+ '[{
+   "sku": "sku23",
+   "quantity": 10
+ }]' \
+  'http://localhost:3000/dev/stock/order'

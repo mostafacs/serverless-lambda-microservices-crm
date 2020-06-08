@@ -53,10 +53,11 @@ functions:
 
   orderHandler:
     handler: handlers/stock-handler.orderHandler
+    name: inventory-stocks-order-handler
     events:
       - http:
           path: stock/order
           method: post
 
 plugins:
-   - serverless-offline
+  - serverless-offline

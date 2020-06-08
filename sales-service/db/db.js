@@ -8,18 +8,20 @@ const options = {
     useUnifiedTopology: true
 };
 
-const mongoUrl = 'mongodb+srv://mostafa:admin@cluster0-opsew.mongodb.net/sales?retryWrites=true&w=majority';
-
+const mongoUrl = process.env.sales_db_url;
+console.log(mongoUrl);
 
 async function connection()  {
-    if(!db)
+    if(!db) {
+        console.log('connect');
         db = await mongoose.connect(mongoUrl, options);
+    }
     return db;
 };
 
 
 (async () => {
-    await connection();
+    return await connection();
 })();
 
 module.exports.connection = connection;

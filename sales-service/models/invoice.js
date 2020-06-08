@@ -2,20 +2,20 @@ const mongoose = require('mongoose');
 
 
 module.exports = mongoose.model('Invoice', {
-    invoice_id: {type: Number, index: true, unique: true, required: true},
-    total_amount: {type: Number, index: true, required: true},
-    total_quantity: {type: Number, index: true, required: true},
-    job_type: {type: Number, index: true, enum: [JobType.DRIVER, JobType.SALES], required: true},
+    invoiceId: {type: Number, index: true, unique: true, required: true},
+    totalPrice: {type: Number, required: true},
+    totalQuantity: {type: Number, required: true},
+    jobType: {type: Number, enum: [JobType.DRIVER, JobType.SALES]},
     client: {
-        first_name: { type: String},
-        last_name: {type: String},
+        firstName: { type: String},
+        lastName: {type: String},
         email: {type: String, index: true}
     },
-    products: [{
+    items: [{
         sku: {type: String, index: true},
         title : {type: String},
         amount: {type: String},
-        cost_price: {type: Number},
-        sale_price: {type: Number}
+        costPrice: {type: Number},
+        salePrice: {type: Number}
     }]
 });

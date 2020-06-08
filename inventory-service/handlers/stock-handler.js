@@ -1,6 +1,7 @@
 const Stock = require('../models/stock');
 const Warehouse = require('../models/warehouse');
 const requests = require('../utils/request');
+const AWS = require('aws-sdk');
 require('../db/db');
 
 
@@ -50,6 +51,24 @@ module.exports.addStock = async (params)=> {
         }
         stock = await stock.save();
         await wh.save();
+
+        // ---------------------------- update product quantity -----------------------
+        const updateProductPayload = {default: '', sku: params.productSku, quantity: params.quantity};
+        const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
+        var sns = new AWS.SNS({
+            endpoint: "http://127.0.0.1:4004/sales-service-dev-product-qty-updater",
+            region: "us-east-1",
+        });
+        sns.publish({
+            Message: JSON.stringify(updateProductPayload),
+            MessageStructure: "json",
+            TopicArn: arn
+        }, () => {
+            console.log("update product total request sent");
+        });
+
+        // -----------------------------------------------------------------------------
+
         requests.successHandler(stock, 'Quantity updated successfully', response);
         return  response;
 
