@@ -53,7 +53,7 @@ functions:
 
   orderHandler:
     handler: handlers/stock-handler.orderHandler
-    name: inventory-stocks-order-handler
+    name: stocks-new-invoice-handler
     events:
       - http:
           path: stock/order

@@ -35,3 +35,4 @@ custom:
 plugins:
   - serverless-offline
   - serverless-offline-sns
+  - serverless-offline-direct-lambda

@@ -55,10 +55,11 @@ module.exports.addStock = async (params)=> {
         // ---------------------------- update product quantity -----------------------
         const updateProductPayload = {default: '', sku: params.productSku, quantity: params.quantity};
         const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
-        var sns = new AWS.SNS({
+        const snsOpts = {
             endpoint: "http://127.0.0.1:4004/sales-service-dev-product-qty-updater",
             region: "us-east-1",
-        });
+        };
+        const sns = new AWS.SNS(snsOpts);
         sns.publish({
             Message: JSON.stringify(updateProductPayload),
             MessageStructure: "json",
@@ -66,7 +67,6 @@ module.exports.addStock = async (params)=> {
         }, () => {
             console.log("update product total request sent");
         });
-
         // -----------------------------------------------------------------------------
 
         requests.successHandler(stock, 'Quantity updated successfully', response);
@@ -203,21 +203,25 @@ module.exports.orderHandler = async (params)=> {
 
             console.log(stocks);
 
+            param.stockLocations = [];
+
             for (let j = 0; j < stocks.length && param.quantity > 0; j++) {
 
                 const stock = stocks[j];
                 if ((stock.quantity - param.quantity) < 0) {
                     stock.quantity = 0;
                     param.quantity -= stock.quantity;
+                    param.stockLocations.push({locationCode: stock.locationCode, quantity: param.quantity});
                 } else {
                     stock.quantity -= param.quantity;
                     param.quantity = 0;
+                    param.stockLocations.push({locationCode: stock.locationCode, quantity: param.quantity});
                 }
                 await stock.save();
             }
         }
 
-        requests.successHandler({}, 'Order processed successfully', response);
+        requests.successHandler(params, 'Order processed successfully', response);
         return response;
 
     } catch (e) {
