@@ -1,0 +1,20 @@
+curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+'{   "invoiceNumber": 123,
+    "paid": 25,
+    "remain": 5,
+    "client": {
+      "firstName": "mostafa",
+        "lastName": "al",
+        "email": "mostafa@gmail.com"
+    },
+    "items": [{
+        "sku":"sku23",
+        "title" : "",
+        "quantity": 2,
+        "costPrice":10,
+        "salePrice": 15
+    }]
+}' \
+ 'http://localhost:4000/dev/invoice'
