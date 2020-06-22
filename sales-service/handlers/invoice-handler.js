@@ -15,7 +15,6 @@ module.exports.newInvoice = async params => {
         invoice.totalQuantity = 0;
 
         //---------------------------------   update inventory ------------------------------
-
         const lambdaOpts = {
             region: 'us-east-1',
         };
@@ -27,7 +26,7 @@ module.exports.newInvoice = async params => {
         let lambda = new AWS.Lambda(lambdaOpts);
 
         const lambdaParams = {
-            FunctionName: process.env.stockNewInvoiceHandler,
+            FunctionName: process.env.stockNewInvoiceHandlerFuncName,
             // RequestResponse is important here. Without it we won't get the result Payload
             InvocationType: 'RequestResponse',
             LogType: 'Tail', // other option is 'None'
@@ -35,13 +34,14 @@ module.exports.newInvoice = async params => {
         };
 
 
-        const response = await lambda.invoke(lambdaParams).promise();
-
-        if(response.body.success) {
+        let response = await lambda.invoke(lambdaParams).promise();
+        response = JSON.parse(response.Payload);
+        response = JSON.parse(response.body);
+        if(!response.success) {
             throw new Error(response.body.message);
         }
 
-        invoice.items = response.body.data;
+        invoice.items = response.data;
         invoice = await invoice.save();
         requests.successHandler(invoice, 'Invoice created successfully', response);
         return response;

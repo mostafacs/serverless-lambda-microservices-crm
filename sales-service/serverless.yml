@@ -21,18 +21,34 @@ functions:
           method: put
 
   product-qty-updater:
+    name: product-qty-function
     handler: handlers/product-handler.updateProductQuantity
     events:
       - sns:
           arn: "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic"
 
+  createInvoice:
+    name: product-qty-function
+    handler: handlers/invoice-handler.newInvoice
+    events:
+      - http:
+          path: invoice
+          method: post
+
+
+
+
 
 custom:
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 4001
   serverless-offline-sns:
-    port: 4004 # a free port for the sns server to run on
+    # port: 4004 # a free port for the sns server to run on
     debug: true
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-offline
   - serverless-offline-sns
   - serverless-offline-direct-lambda

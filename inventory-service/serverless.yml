@@ -59,5 +59,17 @@ functions:
           path: stock/order
           method: post
 
+
+custom:
+  serverless-offline:
+    httpPort: 5000
+    lambdaPort: 5001
+  serverless-offline-sns:
+    port: 5002
+    debug: true
+
+
 plugins:
+  - serverless-dotenv-plugin
   - serverless-offline
+  - serverless-offline-sns

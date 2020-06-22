@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 module.exports = mongoose.model('Invoice', {
-    invoiceId: {type: Number, index: true, unique: true, required: true},
+    invoiceNumber: {type: Number, index: true, unique: true, required: true},
     totalPrice: {type: Number, required: true},
     totalQuantity: {type: Number, required: true},
     paid: {type: Number, required: true},
@@ -16,9 +16,9 @@ module.exports = mongoose.model('Invoice', {
     items: [{
         sku: {type: String, index: true},
         title : {type: String},
-        amount: {type: String},
+        quantity: {type: Number},
         costPrice: {type: Number},
         salePrice: {type: Number},
-        stockLocations: [{locationCode: {type: String}, quantity: {type: number}}] // stock locations codes.
+        stockLocations: [{locationCode: {type: String}, quantity: {type: Number}}] // stock locations codes.
     }]
 });

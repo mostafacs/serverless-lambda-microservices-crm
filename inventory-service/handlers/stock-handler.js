@@ -54,16 +54,19 @@ module.exports.addStock = async (params)=> {
 
         // ---------------------------- update product quantity -----------------------
         const updateProductPayload = {default: '', sku: params.productSku, quantity: params.quantity};
-        const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
+       //  const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
         const snsOpts = {
-            endpoint: "http://127.0.0.1:4004/sales-service-dev-product-qty-updater",
+            // endpoint: "http://127.0.0.1:4004/sales-service-dev-product-qty-updater",
             region: "us-east-1",
         };
+        if(process.env.devMode) {
+            snsOpts.endpoint = process.env.productQtyHandlerEndPoint;
+        }
         const sns = new AWS.SNS(snsOpts);
         sns.publish({
             Message: JSON.stringify(updateProductPayload),
             MessageStructure: "json",
-            TopicArn: arn
+            TopicArn: process.env.productQtyHandlerArn
         }, () => {
             console.log("update product total request sent");
         });
@@ -163,7 +166,7 @@ module.exports.orderHandler = async (params)=> {
 
     try {
 
-        params = JSON.parse(params.body);
+        // params = JSON.parse(params.body);
 
         // validate quantities first
         for (let i = 0; i < params.length; i++) {
@@ -186,12 +189,14 @@ module.exports.orderHandler = async (params)=> {
         for (let i = 0; i < params.length; i++) {
 
             const param = params[i];
+            let currentItemQty = param.quantity;
+
             const productQty = await Stock.aggregate([
                 {$match: {productSku: param.sku}},
                 {$group: {_id: null, totalProductsQty: {$sum: "$quantity"}}}
             ]);
 
-            if (productQty[0].totalProductsQty < param.quantity) {
+            if (productQty[0].totalProductsQty < currentItemQty) {
                 throw new Error("Insufficient Quantity for product " + param.sku);
             }
 
@@ -199,23 +204,23 @@ module.exports.orderHandler = async (params)=> {
             let stocks = await Stock.find({
                 quantity: {$gt: 0},
                 productSku: param.sku
-            }).sort({warehousePriority: 1, locationPriority: 1}).limit(10);
+            }).sort({warehousePriority: 1, locationPriority: 1}).limit(10).exec();
 
             console.log(stocks);
 
             param.stockLocations = [];
 
-            for (let j = 0; j < stocks.length && param.quantity > 0; j++) {
+            for (let j = 0; j < stocks.length && currentItemQty > 0; j++) {
 
                 const stock = stocks[j];
-                if ((stock.quantity - param.quantity) < 0) {
+                if ((stock.quantity - currentItemQty) < 0) {
+                    currentItemQty -= stock.quantity;
+                    param.stockLocations.push({locationCode: stock.locationCode, quantity: stock.quantity});
                     stock.quantity = 0;
-                    param.quantity -= stock.quantity;
-                    param.stockLocations.push({locationCode: stock.locationCode, quantity: param.quantity});
                 } else {
-                    stock.quantity -= param.quantity;
-                    param.quantity = 0;
-                    param.stockLocations.push({locationCode: stock.locationCode, quantity: param.quantity});
+                    stock.quantity -= currentItemQty;
+                    param.stockLocations.push({locationCode: stock.locationCode, quantity: currentItemQty});
+                    currentItemQty = 0;
                 }
                 await stock.save();
             }
