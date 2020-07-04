@@ -42,6 +42,10 @@ module.exports.newInvoice = async params => {
         }
 
         invoice.items = response.data;
+        invoice.items.forEach( itm => {
+            invoice.totalPrice += itm.salePrice * itm.quantity;
+            invoice.totalQuantity += itm.quantity;
+        });
         invoice = await invoice.save();
         requests.successHandler(invoice, 'Invoice created successfully', response);
         return response;
@@ -59,14 +63,19 @@ module.exports.updateInvoice = async params => {
     let response = requests.buildResponse();
     try {
 
-        let product = await Product.findOne({sku: details.sku});
-        if (!product) {
-            throw new Error("Product with SKU: [" + details.sku + "] not found.");
+        let invoice = await Invoice.findOne({invoiceNumber: params.invoiceNumber});
+        if (!invoice) {
+            throw new Error("Invoice with number: [" + params.invoiceNumber + "] not found.");
         }
 
-        props.copyProps(params, product, ['_id', 'sku', 'availableQty']);
+        props.copyProps(params, invoice, ['_id', 'items']);
 
-        product = await product.save();
+        invoice.totalPrice = 0;
+        invoice.totalQuantity = 0;
+
+
+
+        invoice = await invoice.save();
         requests.successHandler(product, 'Product updated successfully', response);
         return response;
     } catch (e) {
