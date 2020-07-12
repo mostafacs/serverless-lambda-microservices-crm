@@ -14,7 +14,7 @@ curl -i -X POST \
         "priority": 1
     }]
 }' \
- 'http://localhost:3000/dev/warehouse'
+ 'http://localhost:5000/development/warehouse'
 
 --------------
 
@@ -42,7 +42,7 @@ curl -i -X POST \
           "priority": 2
       }]
   }' \
-  'http://localhost:3000/dev/warehouse'
+  'http://localhost:5000/development/warehouse'
 
 
   -------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ curl -i -X POST \
   "productSku": "sku23",
   "quantity": 5
 }' \
- 'http://localhost:3000/dev/stock/add'
+ 'http://localhost:5000/development/stock/add'
 
 curl -i -X PUT \
    -H "Content-Type:application/json" \
@@ -69,7 +69,7 @@ curl -i -X PUT \
   "productSku": "sku23",
   "quantity": 10
 }' \
- 'http://localhost:3000/dev/stock/move'
+ 'http://localhost:5000/development/stock/move'
 
  ------------------------------------------
 
@@ -81,4 +81,4 @@ curl -i -X PUT \
    "sku": "sku23",
    "quantity": 10
  }]' \
-  'http://localhost:3000/dev/stock/order'
+  'http://localhost:5000/development/stock/order'

@@ -1,0 +1,37 @@
+### New Product
+POST http://localhost:4000/development/product
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{ "sku": "sku23",
+    "title": "Product 1",
+    "description": "Product 1 description",
+    "availableQty": 0,
+    "tags": ["p1"],
+    "customFields": [],
+    "weight": 12,
+    "width": 5,
+    "height":2,
+    "costPrice": 10,
+    "salePrice": 20
+}
+
+### Update Product
+PUT http://localhost:4000/development/product
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{ "sku": "sku23",
+  "title": "Product 1 2",
+  "description": "Product 1 description",
+  "availableQty": 0,
+  "tags": ["p1"],
+  "customFields": [],
+  "weight": 12,
+  "width": 5,
+  "height":2,
+  "costPrice": 10,
+  "salePrice": 20
+}

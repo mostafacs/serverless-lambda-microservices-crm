@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 require('../db/db');
 
 
-module.exports.addStock = async (params)=> {
+module.exports.addStock = async (params) => {
 
 
     const response = requests.buildResponse();
@@ -18,7 +18,7 @@ module.exports.addStock = async (params)=> {
         let locPriority = -1;
 
         const wh = await Warehouse.findOne({warehouseCode: params.warehouseCode});
-        if(!wh) {
+        if (!wh) {
             throw new Error('Warehouse is not exists');
         }
         whPriority = wh.priority;
@@ -31,7 +31,7 @@ module.exports.addStock = async (params)=> {
             }
         });
 
-        if(!locationExists) {
+        if (!locationExists) {
             throw new Error('Location is not exists');
         }
 
@@ -54,12 +54,12 @@ module.exports.addStock = async (params)=> {
 
         // ---------------------------- update product quantity -----------------------
         const updateProductPayload = {default: '', sku: params.productSku, quantity: params.quantity};
-       //  const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
+        //  const arn = "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic";
         const snsOpts = {
             // endpoint: "http://127.0.0.1:4004/sales-service-dev-product-qty-updater",
             region: "us-east-1",
         };
-        if(process.env.devMode) {
+        if (process.env.devMode) {
             snsOpts.endpoint = process.env.productQtyHandlerEndPoint;
         }
         const sns = new AWS.SNS(snsOpts);
@@ -73,7 +73,7 @@ module.exports.addStock = async (params)=> {
         // -----------------------------------------------------------------------------
 
         requests.successHandler(stock, 'Quantity updated successfully', response);
-        return  response;
+        return response;
 
     } catch (e) {
         requests.errorHandler(e, response);
@@ -81,7 +81,7 @@ module.exports.addStock = async (params)=> {
     }
 };
 
-module.exports.moveStock = async (params)=> {
+module.exports.moveStock = async (params) => {
 
 
     const response = requests.buildResponse();
@@ -100,7 +100,7 @@ module.exports.moveStock = async (params)=> {
             productSku: params.productSku
         });
 
-        if(!toStock) {
+        if (!toStock) {
             toStock = new Stock(
                 {
                     warehouseCode: params.toWarehouseCode,
@@ -110,23 +110,22 @@ module.exports.moveStock = async (params)=> {
                 });
         }
 
-        if(!fromStock) {
+        if (!fromStock) {
             throw new Error('FromStock is not exists');
         }
 
 
-        if(fromStock.quantity < params.quantity) {
+        if (fromStock.quantity < params.quantity) {
             throw new Error('Insufficient amount on stock to move');
         }
-
 
 
         const fromWh = await Warehouse.findOne({warehouseCode: params.fromWarehouseCode});
         fromWh.totalQty -= params.quantity;
         fromWh.locations.forEach(location => {
-           if (location.locationCode === params.fromLocationCode) {
-               location.totalQty -= params.quantity;
-           }
+            if (location.locationCode === params.fromLocationCode) {
+                location.totalQty -= params.quantity;
+            }
         });
 
 
@@ -160,7 +159,7 @@ module.exports.moveStock = async (params)=> {
 };
 
 
-module.exports.orderHandler = async (params)=> {
+module.exports.invoiceHandler = async (params) => {
 
     const response = requests.buildResponse();
 
@@ -171,8 +170,8 @@ module.exports.orderHandler = async (params)=> {
         // validate quantities first
         for (let i = 0; i < params.length; i++) {
 
-            if(params[i].quantity <= 0) {
-                throw new Error("Order quantity for product ["+ params[i].sku +"] can't be less than or equal zero " );
+            if (params[i].quantity <= 0) {
+                throw new Error("Order quantity for product [" + params[i].sku + "] can't be less than or equal zero ");
             }
 
             const productQty = await Stock.aggregate([
@@ -204,7 +203,7 @@ module.exports.orderHandler = async (params)=> {
             let stocks = await Stock.find({
                 quantity: {$gt: 0},
                 productSku: param.sku
-            }).sort({warehousePriority: 1, locationPriority: 1}).limit(10).exec();
+            }).sort({warehousePriority: 1, locationPriority: 1, quantity: -1}).limit(50).exec();
 
             console.log(stocks);
 
@@ -235,9 +234,38 @@ module.exports.orderHandler = async (params)=> {
     }
 };
 
-module.exports.refundOrderHandler = async (params)=> {
+module.exports.invoiceRestoreHandler = async (params) => {
 
-    for (let i = 0; i < params.length; i++) {
+    const response = requests.buildResponse();
 
+    try {
+        for (let i = 0; i < params.length; i++) {
+            const item = params[i];
+            if (item.stockLocations && item.stockLocations.length > 0) {
+
+                item.stockLocations.forEach(sl => {
+
+                     Stock.findOneAndUpdate({
+                        locationCode: sl.locationCode,
+                        productSku: item.sku
+                    }, {$inc: {quantity: sl.quantity}});
+
+                    Warehouse.findOneAndUpdate({
+                        'locations.locationCode': sl.quantity
+                    }, {
+                        $inc: {totalQty: sl.quantity},
+                        $inc: {'locations.$.totalQty': sl.quantity}
+                    }).exec();
+                });
+
+            }
+        }
+        requests.successHandler(params, 'Invoice Restore successfully', response);
+        return response;
+    } catch (e) {
+        requests.errorHandler(e, response);
+        return response;
     }
+
+
 };

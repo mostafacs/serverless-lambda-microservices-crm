@@ -1,0 +1,77 @@
+POST http://localhost:5000/development/warehouse
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{     "warehouseCode": "wh-123",     "warehouseLabel": "NC-wh",     "totalQty": 1,     "priority": 1,     "locations": [{         "locationLabel": "loc 1",         "locationCode": "loc-1",         "locationDesc": "dec",         "totalQty": 0,         "priority": 1     }] }
+
+### Update Warehouse
+PUT http://localhost:5000/development/warehouse
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+  "warehouseCode": "wh-123",
+  "warehouseLabel": "NC-whxx",
+  "totalQty": 1,
+  "priority": 1,
+  "locations": [
+    {
+      "locationLabel": "loc 1 xxx",
+      "locationCode": "loc-1",
+      "locationDesc": "dec x",
+      "totalQty": 0,
+      "priority": 1
+    },
+    {
+      "locationLabel": "loc 2",
+      "locationCode": "loc-2",
+      "locationDesc": "dec 2",
+      "totalQty": 0,
+      "priority": 2
+    }
+  ]
+}
+
+
+
+### Add  to Stock
+POST http://localhost:5000/development/stock/add
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+  "warehouseCode": "wh-123",
+  "locationCode": "loc-1",
+  "productSku": "sku23",
+  "quantity": 5
+}
+
+### Move Stock
+PUT http://localhost:5000/development/stock/move
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+  "fromWarehouseCode": "wh-123",
+  "fromLocationCode": "loc-1",
+  "toWarehouseCode": "wh-123",
+  "toLocationCode": "loc-2",
+  "productSku": "sku23",
+  "quantity": 10
+}
+
+###
+POST http://localhost:5000/development/stock/order
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+[{
+  "sku": "sku23",
+  "quantity": 10
+}]
+<> 2020-07-11T091451.200.json

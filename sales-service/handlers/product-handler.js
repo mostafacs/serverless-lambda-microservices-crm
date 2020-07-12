@@ -27,9 +27,9 @@ module.exports.updateProduct = async params => {
     let response = requests.buildResponse();
     try {
 
-        let product = await Product.findOne({sku: details.sku});
+        let product = await Product.findOne({sku: params.sku});
         if(!product) {
-            throw new Error("Product with SKU: [" + details.sku + "] not found.");
+            throw new Error("Product with SKU: [" + params.sku + "] not found.");
         }
 
         props.copyProps(params, product, ['_id', 'sku', 'availableQty']);

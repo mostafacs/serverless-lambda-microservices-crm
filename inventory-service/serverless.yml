@@ -51,12 +51,20 @@ functions:
           path: stock/move
           method: put
 
-  orderHandler:
-    handler: handlers/stock-handler.orderHandler
+  invoiceHandler:
+    handler: handlers/stock-handler.invoiceHandler
     name: stocks-new-invoice-handler
     events:
       - http:
           path: stock/order
+          method: post
+
+  invoiceRestoreHandler:
+    handler: handlers/stock-handler.invoiceRestoreHandler
+    name: stocks-invoice-restore-handler
+    events:
+      - http:
+          path: stock/order/refund
           method: post
 
 

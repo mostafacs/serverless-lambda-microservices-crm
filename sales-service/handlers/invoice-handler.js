@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const requests = require('../utils/request');
 const props = require('../utils/props');
 const Invoice = require('../models/invoice');
+const inventoryRemoteCaller = require('../remote-call/inventory-rc')
 require('../db/db');
 
 
@@ -14,39 +15,16 @@ module.exports.newInvoice = async params => {
         invoice.totalPrice = 0;
         invoice.totalQuantity = 0;
 
-        //---------------------------------   update inventory ------------------------------
-        const lambdaOpts = {
-            region: 'us-east-1',
-        };
 
-        if (process.env.devMode === 'true') {
-            lambdaOpts.endpoint = process.env.stockNewInvoiceHandlerEndPoint // 'http://localhost:4000'
-        }
-
-        let lambda = new AWS.Lambda(lambdaOpts);
-
-        const lambdaParams = {
-            FunctionName: process.env.stockNewInvoiceHandlerFuncName,
-            // RequestResponse is important here. Without it we won't get the result Payload
-            InvocationType: 'RequestResponse',
-            LogType: 'Tail', // other option is 'None'
-            Payload: JSON.stringify(invoice.items)
-        };
-
-
-        let response = await lambda.invoke(lambdaParams).promise();
-        response = JSON.parse(response.Payload);
-        response = JSON.parse(response.body);
-        if(!response.success) {
-            throw new Error(response.body.message);
-        }
-
-        invoice.items = response.data;
+        const updatedItems = inventoryRemoteCaller.deductQuantities(invoice.items);
+        invoice.items = updatedItems;
         invoice.items.forEach( itm => {
             invoice.totalPrice += itm.salePrice * itm.quantity;
             invoice.totalQuantity += itm.quantity;
         });
+
         invoice = await invoice.save();
+
         requests.successHandler(invoice, 'Invoice created successfully', response);
         return response;
 
@@ -72,6 +50,10 @@ module.exports.updateInvoice = async params => {
 
         invoice.totalPrice = 0;
         invoice.totalQuantity = 0;
+
+        invoice.
+
+
 
 
 
