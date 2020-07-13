@@ -45,6 +45,8 @@ module.exports.updateProduct = async params => {
 
 module.exports.updateProductQuantity = async (params) => {
 
+
+    const envs = process.env;
     let response = requests.buildResponse();
     try {
         const details = JSON.parse(params.Message);
@@ -54,6 +56,7 @@ module.exports.updateProductQuantity = async (params) => {
          throw new Error("Product with SKU: [" + details.sku + "] not found.");
         }
         product.availableQty += details.quantity;
+        product.save();
     } catch (e) {
         requests.errorHandler(e, response);
         return response;
