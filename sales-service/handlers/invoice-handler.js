@@ -1,8 +1,7 @@
-const AWS = require('aws-sdk');
 const requests = require('../utils/request');
 const props = require('../utils/props');
 const Invoice = require('../models/invoice');
-const inventoryRemoteCaller = require('../remote-call/inventory-rc')
+const inventoryRemoteCaller = require('../remote-call/inventory-rc');
 require('../db/db');
 
 
@@ -51,14 +50,13 @@ module.exports.updateInvoice = async params => {
         invoice.totalPrice = 0;
         invoice.totalQuantity = 0;
 
-        invoice.
+        inventoryRemoteCaller.restoreQuantities(invoice.items);
 
-
-
-
+        const updatedItems = inventoryRemoteCaller.deductQuantities(params.items);
+        invoice.items = updatedItems;
 
         invoice = await invoice.save();
-        requests.successHandler(product, 'Product updated successfully', response);
+        requests.successHandler(invoice, 'Invoice updated successfully', response);
         return response;
     } catch (e) {
         requests.errorHandler(e, response);

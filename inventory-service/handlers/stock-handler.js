@@ -120,34 +120,26 @@ module.exports.moveStock = async (params) => {
         }
 
 
-        const fromWh = await Warehouse.findOne({warehouseCode: params.fromWarehouseCode});
-        fromWh.totalQty -= params.quantity;
-        fromWh.locations.forEach(location => {
-            if (location.locationCode === params.fromLocationCode) {
-                location.totalQty -= params.quantity;
-            }
-        });
-
-
-        const toWh = await Warehouse.findOne({warehouseCode: params.toWarehouseCode});
-        toWh.totalQty += params.quantity;
-        toStock.warehousePriority = toWh.priority;
-        toWh.locations.forEach(location => {
-            if (location.locationCode === params.toLocationCode) {
-                location.totalQty += params.quantity;
-                toStock.locationPriority = location.priority;
-            }
-        });
-
-
         fromStock.quantity -= params.quantity;
         toStock.quantity += params.quantity;
 
 
         await fromStock.save();
         await toStock.save();
-        await fromWh.save();
-        await toWh.save();
+
+        await Warehouse.findOneAndUpdate({
+            'locations.locationCode': fromStock.locationCode
+        }, {
+            $inc: {totalQty: params.quantity * -1 },
+            $inc: {'locations.$.totalQty': params.quantity * -1}
+        }).exec();
+
+        await Warehouse.findOneAndUpdate({
+            'locations.locationCode': toStock.locationCode
+        }, {
+            $inc: {totalQty: params.quantity },
+            $inc: {'locations.$.totalQty': params.quantity }
+        }).exec();
 
         requests.successHandler({}, 'Quantity updated successfully', response);
         return response;
@@ -212,16 +204,27 @@ module.exports.invoiceHandler = async (params) => {
             for (let j = 0; j < stocks.length && currentItemQty > 0; j++) {
 
                 const stock = stocks[j];
+                let deductedQty = 0;
                 if ((stock.quantity - currentItemQty) < 0) {
+                    deductedQty = stock.quantity;
                     currentItemQty -= stock.quantity;
                     param.stockLocations.push({locationCode: stock.locationCode, quantity: stock.quantity});
                     stock.quantity = 0;
                 } else {
+                    deductedQty = currentItemQty;
                     stock.quantity -= currentItemQty;
                     param.stockLocations.push({locationCode: stock.locationCode, quantity: currentItemQty});
                     currentItemQty = 0;
                 }
                 await stock.save();
+
+                deductedQty *= -1;
+                await Warehouse.findOneAndUpdate({
+                    'locations.locationCode': stock.locationCode
+                }, {
+                    $inc: {totalQty: deductedQty},
+                    $inc: {'locations.$.totalQty': deductedQty}
+                }).exec();
             }
         }
 
@@ -243,20 +246,22 @@ module.exports.invoiceRestoreHandler = async (params) => {
             const item = params[i];
             if (item.stockLocations && item.stockLocations.length > 0) {
 
-                item.stockLocations.forEach(sl => {
+                for (const sl of item.stockLocations) {
 
-                     Stock.findOneAndUpdate({
+                     await Stock.findOneAndUpdate({
                         locationCode: sl.locationCode,
                         productSku: item.sku
-                    }, {$inc: {quantity: sl.quantity}});
+                    }, {
+                         $inc: {quantity: sl.quantity}
+                     }).exec();
 
-                    Warehouse.findOneAndUpdate({
-                        'locations.locationCode': sl.quantity
+                    await Warehouse.findOneAndUpdate({
+                        'locations.locationCode': sl.locationCode
                     }, {
                         $inc: {totalQty: sl.quantity},
                         $inc: {'locations.$.totalQty': sl.quantity}
                     }).exec();
-                });
+                }
 
             }
         }

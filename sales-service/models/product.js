@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-module.exports = mongoose.model('Product', {
+module.exports = mongoose.models.Product || mongoose.model('Product', {
     sku: {type: String, index: true, unique: true, required: true},
     title: { type: String, required: true},
     description: {type: String},

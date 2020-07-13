@@ -61,7 +61,7 @@ Content-Type: application/json
   "toWarehouseCode": "wh-123",
   "toLocationCode": "loc-2",
   "productSku": "sku23",
-  "quantity": 10
+  "quantity": 1
 }
 
 ###

@@ -56,7 +56,7 @@ functions:
     name: stocks-new-invoice-handler
     events:
       - http:
-          path: stock/order
+          path: stock/invoice
           method: post
 
   invoiceRestoreHandler:

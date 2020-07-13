@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-module.exports = mongoose.model('Invoice', {
+module.exports = mongoose.models.Invoice || mongoose.model('Invoice', {
     invoiceNumber: {type: Number, index: true, unique: true, required: true},
     totalPrice: {type: Number, required: true},
     totalQuantity: {type: Number, required: true},
