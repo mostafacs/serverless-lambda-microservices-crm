@@ -5,16 +5,20 @@ const options = {
     bufferCommands: false, // Disable mongoose buffering
     bufferMaxEntries: 0,
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: false
 };
 
-const mongoUrl = process.env.resource_db_url;
+const mongoUrl = process.env.db_url;
 console.log(mongoUrl);
 
 async function connection()  {
     if(!db) {
-        console.log('connect');
-        db = await mongoose.connect(mongoUrl, options);
+        if(mongoose.connection && mongoose.connection.readyState){
+            db = mongoose.connection
+        } else {
+            console.log('connect');
+            db = await mongoose.connect(mongoUrl, options);
+        }
     }
     return db;
 };
