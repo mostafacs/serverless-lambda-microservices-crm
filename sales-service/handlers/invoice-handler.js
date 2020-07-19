@@ -50,7 +50,7 @@ module.exports.updateInvoice = async params => {
         invoice.totalPrice = 0;
         invoice.totalQuantity = 0;
 
-        inventoryRemoteCaller.restoreQuantities(invoice.items);
+        await inventoryRemoteCaller.restoreQuantities(invoice.items);
 
         const updatedItems = inventoryRemoteCaller.deductQuantities(params.items);
         invoice.items = updatedItems;
