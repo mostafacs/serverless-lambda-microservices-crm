@@ -28,12 +28,33 @@ functions:
           arn: "arn:aws:sns:us-east-1:458929599444:product-amount-update-topic"
 
   createInvoice:
-    name: product-qty-function
+    name: create-invoice-function
     handler: handlers/invoice-handler.newInvoice
     events:
       - http:
           path: invoice
           method: post
+
+  updateInvoice:
+    name: update-invoice-function
+    handler: handlers/invoice-handler.updateInvoice
+    events:
+      - http:
+          path: invoice
+          method: put
+
+
+  removeInvoice:
+    name: remove-invoice-function
+    handler: handlers/invoice-handler.removeInvoice
+    events:
+      - http:
+          path: invoice/{invoiceNumber}
+          method: delete
+          request:
+            parameters:
+              paths:
+                invoiceNumber: true
 
 
 

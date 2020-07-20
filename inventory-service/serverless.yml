@@ -54,18 +54,12 @@ functions:
   invoiceHandler:
     handler: handlers/stock-handler.invoiceHandler
     name: stocks-new-invoice-handler
-    events:
-      - http:
-          path: stock/invoice
-          method: post
+
 
   invoiceRestoreHandler:
     handler: handlers/stock-handler.invoiceRestoreHandler
     name: stocks-invoice-restore-handler
-    events:
-      - http:
-          path: stock/order/refund
-          method: post
+
 
 
 custom:

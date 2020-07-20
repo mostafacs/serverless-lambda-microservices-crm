@@ -1,6 +1,6 @@
 const RC = require('../utils/remote-calls')
 
-module.exports.deductQuantities = async (invoiceItems) => {
+module.exports.deductQuantities = (invoiceItems) => {
     return RC.callLambdaSync(process.env.stockNewInvoiceHandlerFuncName, process.env.stockNewInvoiceHandlerEndPoint, invoiceItems);
 }
 

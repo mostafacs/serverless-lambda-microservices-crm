@@ -1,3 +1,5 @@
+
+## New Warehouse
 POST http://localhost:5000/development/warehouse
 Accept: */*
 Cache-Control: no-cache
@@ -64,14 +66,3 @@ Content-Type: application/json
   "quantity": 1
 }
 
-###
-POST http://localhost:5000/development/stock/order
-Accept: */*
-Cache-Control: no-cache
-Content-Type: application/json
-
-[{
-  "sku": "sku23",
-  "quantity": 10
-}]
-<> 2020-07-11T091451.200.json
